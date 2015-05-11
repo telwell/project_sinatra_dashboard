@@ -1,1 +1,5 @@
 <h2>Scraping</h2>
+
+<% File.readlines("csv_file.csv").each do |line| %>
+    <p><%= line %></p>
+<% end %>
