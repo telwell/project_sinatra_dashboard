@@ -19,7 +19,7 @@ set :server, 'webrick'
 # Routes
 get '/' do
 	scraper = Scraper.new
-	results = scraper.search
+	results = scraper.search(params[:zip].to_i)
 	scraper.save(results)
 	erb :index
 end

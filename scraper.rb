@@ -22,7 +22,11 @@ class Scraper
 
 	# To be used in future apps, in case we want to change the user agent.
 	def get_agent
-		agent = Mechanize.new { |agent| agent.user_agent_alias = 'Mac Safari' }
+		agent = Mechanize.new do |agent| 
+			agent.user_agent_alias = 'Mac Safari'
+			# Don't forget this rate limit!!
+			agent.history_added = Proc.new { sleep 0.5 }
+		end
 	end
 
 	# To initiate the area page we need to enter in a zip code.
