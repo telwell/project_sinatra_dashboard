@@ -3,8 +3,6 @@ require 'sinatra'
 require 'erb'
 require 'json'
 require 'mechanize'
-require 'pry'
-require 'csv'
 
 # Require classes/helpers
 require './scraper.rb'
