@@ -1,0 +1,27 @@
+<h2>10 Day Forecast for ZIP <%= whats_my_zip %></h2>
+<form class="form-inline" method="GET" action="/">
+	<label for="zip">Reset Zip:</label>
+	<input type="text" class="form-control" name="zip" id="zip" placeholder="Reset Zip">
+	<button type="submit" class="btn btn-default">Submit</button>
+</form>
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th>Month</th>
+			<th>Day</th>
+			<th>Year</th>
+			<th>Low Temp.</th>
+			<th>High Temp.</th>
+			<th>Weather</th>
+		</tr>
+	</thead>
+	<tbody>
+		<% @weather_results.each do |result| %>
+		    <tr>
+			    <% WEATHER_ARGS.each do |cell| %>
+						<td><%= result[cell] %></td>
+			    <% end %>
+		    </tr>
+		<% end %>
+	</tbody>
+</table>

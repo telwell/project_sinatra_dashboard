@@ -1,15 +1,14 @@
 # Create class to save CSV files
 
 class CSVSaver
-	def initialize(results)
-		save(results)
+	def initialize(results, file_name, args)
+		save(results, file_name, args)
 	end
 
-	def save(results)
-		CSV.open('csv_file.csv', 'w') do |csv|
+	def save(results, file_name, args)
+		CSV.open(file_name, 'w') do |csv|
       results.each do |result|
       	buffer = []
-      	args = [:month, :day, :year, :temp_low, :temp_high, :classification]
       	args.each {|arg| buffer << result[arg] }
       	csv << buffer
       end

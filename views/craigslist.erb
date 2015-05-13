@@ -1,0 +1,49 @@
+<h2>NYC Craigslist Apartment Search</h2>
+<p>Enter search information:</p>
+	<form class="form-inline" method="GET" action="/">
+		<div class="row">	
+			<div class="col-sm-4">
+				<input type="text" class="form-control fullwidth-form" name="query" id="query" placeholder="Search">
+			</div>
+
+			<div class="col-sm-3">
+				<input type="text" class="form-control" name="min_price" id="min_price" placeholder="Min Price">
+			</div>
+
+			<div class="col-sm-3">
+				<input type="text" class="form-control" name="max_price" id="max_price" placeholder="Max Price">
+			</div>
+
+			<div class="col-sm-2">
+				<button type="submit" class="btn btn-default">Submit</button>
+			</div>
+		</div>
+	</form>
+
+<% if craigslist_has_session? %>
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>URL</th>
+				<th>Email</th>
+				<th>Price</th>
+				<th>Location</th>
+			</tr>
+		</thead>
+		<tbody>
+		<% @craigslist_results.each do |result| %>
+		    <tr>
+			    <% CRAIGSLIST_ARGS.each do |cell| %>
+						<td><%= result[cell] %></td>
+			    <% end %>
+		    </tr>
+		<% end %>
+	</tbody>
+		
+	</table>
+
+<!-- If we don't have anything saved to do the search -->
+<% else %>
+	<p>Please enter your search criteria in the form above</p>
+<% end %>
