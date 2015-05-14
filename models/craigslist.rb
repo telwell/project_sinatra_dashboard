@@ -20,20 +20,11 @@ class CraigslistScraper < Scraper
 	def search_craigslist(min_price, max_price, query)
 		search_base_url = 'http://newyork.craigslist.org/search/aap'
 		listing_base_url = 'http://newyork.craigslist.org'
-
-		begin
-		  page = @agent.get(search_base_url)
-		rescue Mechanize::ResponseCodeError => exception
-		  if exception.response_code == '403'
-		    page = exception.page
-		  else
-		    raise # Some other error, re-raise
-		  end
+		page = @agent.get(search_base_url) do |page|
+			results_listings = craigslist_results_listings(page, min_price, max_price, query)
+			all_craigslist_listings = scrape_craigslist_listings(results_listings, listing_base_url)
+			return all_craigslist_listings
 		end
-
-		results_listings = craigslist_results_listings(page, min_price, max_price, query)
-		all_craigslist_listings = scrape_craigslist_listings(results_listings, listing_base_url) unless results_listings.nil?
-		return all_craigslist_listings
 	end
 
 	private
@@ -42,14 +33,12 @@ class CraigslistScraper < Scraper
 	# particular Craigslist search. There should be 100 per page.
 	# Each of these listings will be scraped further later.
 	def craigslist_results_listings(page, min_price, max_price, query)
-		if page.respond_to?(:form_with)
-			results_page = page.form_with(:id => 'searchform') do |search|
-				search.query = query
-				search.maxAsk = max_price
-				search.minAsk = min_price
-			end.submit
-			results_page.search('.row')
-		end
+		results_page = page.form_with(:id => 'searchform') do |search|
+			search.query = query
+			search.maxAsk = max_price
+			search.minAsk = min_price
+		end.submit
+		results_page.search('.row')
 	end
 
 	# Takes an array of all of the Mechnize elements which are 
