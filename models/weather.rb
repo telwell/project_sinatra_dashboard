@@ -1,11 +1,17 @@
+# Creating a WeatherScraper class which
+# will hold all of the methods directly
+# related to scraping info for the weather.
+
 # Create struct for our weather results
 Forecast = Struct.new(:day, :month, :year, :temp_low, :temp_high, :classification)
-Listing = Struct.new(:name, :url, :email, :price, :location)
 
-class Scraper
+class WeatherScraper < Scraper
+	
 	def initialize
-		@agent = get_agent
+		super
 	end
+
+	public
 
 	# Initiate searching WUNDERGROUND. Return an array full of 
 	# FORECAST Structs for the 10-day forecast.
@@ -17,73 +23,7 @@ class Scraper
 		end
 	end
 
-	# Search method for searching NYC craigslist for apartments
-	# based on location, max, and min prices. Returns a results
-	# array with all Listing Structs ready to
-	# be sent to a CSV file.
-	def search_craigslist(min_price, max_price, query)
-		search_base_url = 'http://newyork.craigslist.org/search/aap'
-		listing_base_url = 'http://newyork.craigslist.org'
-		page = @agent.get(search_base_url) do |page|
-			results_listings = craigslist_results_listings(page, min_price, max_price, query)
-			all_craigslist_listings = scrape_craigslist_listings(results_listings, listing_base_url)
-			return all_craigslist_listings
-		end
-	end
-
-	# Create a new CSVSaver and then pass it what we want to save.
-	def save(results, file_name, args)
-		CSVSaver.new(results, file_name, args)
-	end
-
-	# Save our parameters (GET variables) as session variables if they're set
-	def save_session(params, session)
-		session[:zip] = params[:zip] if params[:zip]
-		session[:min_price] = params[:min_price].to_i if params[:min_price]
-		session[:max_price] = params[:max_price].to_i if params[:max_price]
-		session[:query] = params[:query].split(' ').join('+') if params[:query]
-	end
-
 	private
-
-	# To be used in future apps, in case we want to change the user agent.
-	def get_agent
-		agent = Mechanize.new do |agent| 
-			agent.user_agent_alias = 'Mac Safari'
-			# Don't forget this rate limit!!
-			agent.history_added = Proc.new { sleep 0.5 }
-		end
-	end
-
-	# Method to find and return all of the results elements for a 
-	# particular Craigslist search. There should be 100 per page.
-	# Each of these listings will be scraped further later.
-	def craigslist_results_listings(page, min_price, max_price, query)
-		results_page = page.form_with(:id => 'searchform') do |search|
-			search.query = query
-			search.maxAsk = max_price
-			search.minAsk = min_price
-		end.submit
-		results_page.search('.row')
-	end
-
-	# Takes an array of all of the Mechnize elements which are 
-	# Craigslist listings, creates a new Listing Struct with them, scrapes
-	# the relevant information (sans email, that's on another page), and
-	# then returns an array with all of these Listing Structs.
-	def scrape_craigslist_listings(results_listings, listing_base_url)
-		all_info = []
-		results_listings.each do |listing|
-			listing_info = Listing.new
-			listing_info[:name] = listing.search('.hdrlnk').inner_text
-			url_temp = listing_base_url + listing.search('.pl').inner_html.match(/href=\"(.*?)\"/)[1]
-			listing_info[:url] = "<a href=\"#{url_temp}\" target=\"_blank\">Listing URL</a>" 
-			listing_info[:price] = listing.search('.price').inner_text
-			listing_info[:location] = listing.search('.pnr').inner_text.match(/\((.*?)\)/)[1]
-			all_info << listing_info
-		end
-		all_info
-	end
 
 	# To initiate the area page we need to enter in a zip code.
 	# I'll use NYC by default.

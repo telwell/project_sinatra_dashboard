@@ -5,8 +5,9 @@ require 'json'
 require 'mechanize'
 
 # Require classes/helpers
-require './scraper.rb'
-require './saver.rb'
+require './models/scraper.rb'
+require './models/weather.rb'
+require './models/craigslist.rb'
 require './helpers/dashboard_helper.rb'
 
 # Register helper
@@ -27,9 +28,10 @@ CRAIGSLIST_CSV_FILE = 'craigslist.csv'
 
 # Routes
 get '/' do
-	scraper = Scraper.new
-	scraper.save_session(params, session)
-	@weather_results = scraper.search_weather(whats_my_zip)
-	@craigslist_results = scraper.search_craigslist(session[:min_price], session[:max_price], session[:query]) if craigslist_has_session?
+	weather_scraper = WeatherScraper.new
+	craigslist_scraper = CraigslistScraper.new
+	save_session(params, session)
+	@weather_results = weather_scraper.search_weather(whats_my_zip)
+	@craigslist_results = craigslist_scraper.search_craigslist(session[:min_price], session[:max_price], session[:query]) if craigslist_has_session?
 	erb :index
 end
