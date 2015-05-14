@@ -42,12 +42,14 @@ class CraigslistScraper < Scraper
 	# particular Craigslist search. There should be 100 per page.
 	# Each of these listings will be scraped further later.
 	def craigslist_results_listings(page, min_price, max_price, query)
-		results_page = page.form_with(:id => 'searchform') do |search|
-			search.query = query
-			search.maxAsk = max_price
-			search.minAsk = min_price
-		end.submit
-		results_page.search('.row')
+		if page.respond_to?(:form_with)
+			results_page = page.form_with(:id => 'searchform') do |search|
+				search.query = query
+				search.maxAsk = max_price
+				search.minAsk = min_price
+			end.submit
+			results_page.search('.row')
+		end
 	end
 
 	# Takes an array of all of the Mechnize elements which are 
