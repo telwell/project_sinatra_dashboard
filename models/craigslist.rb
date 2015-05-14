@@ -20,11 +20,20 @@ class CraigslistScraper < Scraper
 	def search_craigslist(min_price, max_price, query)
 		search_base_url = 'http://newyork.craigslist.org/search/aap'
 		listing_base_url = 'http://newyork.craigslist.org'
-		page = @agent.get(search_base_url) do |page|
-			results_listings = craigslist_results_listings(page, min_price, max_price, query)
-			all_craigslist_listings = scrape_craigslist_listings(results_listings, listing_base_url)
-			return all_craigslist_listings
+
+		begin
+		  page = @agent.get(search_base_url)
+		rescue Mechanize::ResponseCodeError => exception
+		  if exception.response_code == '403'
+		    page = exception.page
+		  else
+		    raise # Some other error, re-raise
+		  end
 		end
+
+		results_listings = craigslist_results_listings(page, min_price, max_price, query)
+		all_craigslist_listings = scrape_craigslist_listings(results_listings, listing_base_url)
+		return all_craigslist_listings
 	end
 
 	private
