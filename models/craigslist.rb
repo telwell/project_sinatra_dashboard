@@ -32,7 +32,7 @@ class CraigslistScraper < Scraper
 		end
 
 		results_listings = craigslist_results_listings(page, min_price, max_price, query)
-		all_craigslist_listings = scrape_craigslist_listings(results_listings, listing_base_url)
+		all_craigslist_listings = scrape_craigslist_listings(results_listings, listing_base_url) unless results_listings.nil?
 		return all_craigslist_listings
 	end
 
